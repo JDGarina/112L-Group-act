@@ -1,10 +1,10 @@
 .model small
 .stack 100h
 .data
-    names   db 'alex lexy heroo lez lame',0
-    scrl    db 'alex lexy heroo lez lame$',0
+    names   db 'Balagao Florentino Garina Novero DelaCruz',0
+    scrl    db 'Balagao Florentino Garina Novero DelaCruz$',0
     row     db 10
-    col     db 30
+    col     db 0       
 .code
 main proc
     mov ax, @data
@@ -47,11 +47,11 @@ mainL:
     je exit          
     jmp mainL
 
-;start of num 4
 dscrl: 
 loopscrl:
     mov al, [col]
-    cmp al, 56
+    cmp al, 39      
+    je donescrl
 
     mov ah, 06h
     mov al, 0
@@ -77,11 +77,11 @@ loopscrl:
 x_loop4:
     push cx
     mov cx, 0FFFFh
+    
 y_loop4:
     loop y_loop4
     pop cx
     loop x_loop4
-
     mov al, [col]
     inc al
     mov [col], al
