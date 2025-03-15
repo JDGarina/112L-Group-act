@@ -101,11 +101,16 @@ dinitail:
 ;dito add yung number ninyo and use jump or some shit to go there
 mainL:
     mov ah, 7
-    int 21h        
+    int 21h    
+    
+    cmp al, '1'     ; Check if '1' was pressed
+    je colors ; Jump to handle input section
 
     cmp al, '4'
     jne checkSix
     jmp scroll
+
+
 
 checkSix:
     cmp al, '6'
@@ -114,6 +119,69 @@ checkSix:
 
 notSix:
     jmp mainL
+
+
+;------- start of number 1 -------
+
+colors:
+    push ds                    ; Save DS register
+    mov ax, 0B800h             ; Load video memory segment
+    mov ds, ax                 ; Set DS to point to video memory
+
+    ; Cycle through Red → Orange → Yellow → Green → Blue → Pink → White
+    cmp currAttr, 0Ch         
+    je set_orange
+    cmp currAttr, 06h          
+    je set_yellow
+    cmp currAttr, 0Eh         
+    je set_green
+    cmp currAttr, 02h          
+    je set_blue
+    cmp currAttr, 01h          
+    je set_pink
+    cmp currAttr, 0Dh         
+    je set_white
+    mov currAttr, 0Ch          
+    jmp change_color
+
+set_orange:
+    mov currAttr, 06h         
+    jmp change_color
+
+set_yellow:
+    mov currAttr, 0Eh         
+    jmp change_color
+
+set_green:
+    mov currAttr, 02h          
+    jmp change_color
+
+set_blue:
+    mov currAttr, 01h         
+    jmp change_color
+
+set_pink:
+    mov currAttr, 0Dh          
+    jmp change_color
+
+set_white:
+    mov currAttr, 0Fh         
+    jmp change_color
+
+change_color: ;heres where you select the location of the cursor to set the entire color of text
+    mov si, 10 * 160 + 19 * 2  
+    mov cx, 41                 
+    mov al, currAttr           
+
+change_color_loop:
+    mov [si+1], al             
+    add si, 2                  
+    loop change_color_loop     
+
+    pop ds                    
+    jmp mainL                 
+
+
 
 ;------- start of number 4 -------
 scroll:
