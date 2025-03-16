@@ -15,8 +15,10 @@
     currAttr  db ?
 
     ;var of number 5 
-    namesStr    db  'Balagao Florentino Garina Novero DelaCruz', 0
-    namesCopy   db  50 dup(?)
+    nameInput   db 'Balagao Florentino Garina Novero DelaCruz', 0
+    nameBackup  db 'Balagao Florentino Garina Novero DelaCruz', 0 
+    vowels      db 'aeiouAEIOU', 0
+    scrn        db 0
 
     ;menu var 
     menuText  db '===============================================================================',0Dh,0Ah
@@ -127,7 +129,7 @@ not3:
 not4:
     cmp al, '5'
     jne not5
-    jmp colors 
+    jmp manipulation 
 
 not5:
     cmp al, '6'
@@ -428,6 +430,132 @@ doneScroll:
     jmp mainL
 
 ;------- start of number 5 -------
+manipulation:
+    cmp [scn], 0
+    je restoreOriginal
+
+transformName:
+    lea si, nameInput
+    lea di, nameBackup
+    
+copyLoop:
+    mov al, [si]
+    mov [di], al
+    cmp al, 0
+    je startManipulation
+    inc si
+    inc di
+    jmp copyLoop
+
+startManipulation:
+    lea si, nameInput
+    call replaceVowels
+    call reverseString
+    jmp toggleAndPrint
+
+replaceVowels proc
+    lea si, nameInput
+
+next_char:
+    mov al, [si]       
+    cmp al, 0
+    je endReplaceVowels
+
+    lea di, vowels
+check_vowel:
+    mov bl, [di]  
+    cmp bl, 0
+    je not_vowel
+    cmp al, bl
+    je replaceWithStar
+    inc di
+    jmp check_vowel
+
+not_vowel:
+    jmp skipReplace
+
+replaceWithStar:
+    mov al, '*'
+
+skipReplace:
+    mov [si], al
+    inc si
+    jmp next_char
+
+endReplaceVowels:
+    ret
+replaceVowels endp
+
+reverseString proc
+    lea si, nameInput
+    lea di, nameInput
+
+find_end:
+    cmp byte ptr [di], 0
+    je found_end
+    inc di
+    jmp find_end
+
+found_end:
+    dec di
+    
+swap_loop:
+    cmp si, di
+    jge endReverse
+
+    mov al, [si]
+    mov bl, [di]
+    mov [si], bl
+    mov [di], al
+
+    inc si
+    dec di
+    jmp swap_loop
+
+endReverse:
+    ret
+reverseString endp
+
+toggleAndPrint:
+    xor [scn], 1
+    call printNameInput
+    jmp mainL
+
+restoreOriginal:
+    lea si, nameBackup
+    lea di, nameInput
+restoreLoop:
+    mov al, [si]
+    mov [di], al
+    cmp al, 0
+    je toggleAndPrint
+    inc si
+    inc di
+    jmp restoreLoop
+
+;---print the screen---
+mov ax, 03h
+int 10h
+
+printNameInput proc
+    mov ah, 02h
+    mov bh, 0
+    mov dh, 10
+    mov dl, 19
+    int 10h
+
+    mov si, offset nameInput
+printLoop:
+    lodsb
+    cmp al, 0
+    je endPrint
+    mov ah, 0Eh
+    int 10h
+    jmp printLoop
+
+endPrint:
+    ret
+printNameInput endp
 
 exit:
     mov ah, 4Ch
