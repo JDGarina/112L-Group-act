@@ -7,7 +7,7 @@
     ;var of number 4 rarw
     row       db 10
     col       db 0
-    scn         db 0
+    scn       db 0
     toggle0   db 0
     toggle1   db 0
     direction db ?
@@ -117,7 +117,7 @@ not1:
 not2:
     cmp al, '3'
     jne not3
-    jmp colors  
+    jmp drawBackground
 
 not3:
     cmp al, '4'
@@ -195,6 +195,126 @@ change_color_loop:
 
     pop ds                    
     jmp mainL                 
+
+;------- start of number 3 -------
+
+bgVariant db 0  ; Variable to keep track of the current background variant
+
+drawBackground proc
+    ; Set video mode
+    mov ah, 06h  ; Scroll Up Window / Clear Area
+    mov al, 0    ; Clear entire area
+
+    ; Load the current background variant
+    mov al, bgVariant
+    cmp al, 0
+    je variant1
+    cmp al, 1
+    je variant2
+    cmp al, 2
+    je variant3
+    cmp al, 3
+    je variant4
+    cmp al, 4
+    je variant5
+    cmp al, 5
+    je variant6
+
+variant1:
+    mov bh, 01000000b  ; Red
+    mov bl, 00010000b  ; Blue
+    jmp draw
+
+variant2:
+    mov bh, 00000000b  ; Black
+    mov bl, 01110000b  ; White
+    jmp draw
+
+variant3:
+    mov bh, 00010000b  ; Blue
+    mov bl, 01010000b  ; Purple
+    jmp draw
+
+variant4:
+    mov bh, 01010000b  ; Magenta
+    mov bl, 11000000b  ; Light Red
+    jmp draw
+
+variant5:
+    mov bh, 11100000b  ; Yellow
+    mov bl, 11110000b  ; White
+    jmp draw
+
+variant6:
+    mov bh, 00100000b  ; Green
+    mov bl, 00110000b  ; Cyan
+    jmp draw
+
+draw:
+    ; === left ===
+    mov bh, bh  
+    mov ch, 0
+    mov cl, 0
+    mov dh, 18
+    mov dl, 39
+    mov ah, 06h
+    mov al, 0
+    int 10h
+
+    ; === right ===
+    mov bh, bl  
+    mov ch, 0
+    mov cl, 40
+    mov dh, 18
+    mov dl, 79
+    int 10h
+
+    ; Cycle background variant (increment and wrap around)
+    inc bgVariant
+    cmp bgVariant, 6
+    jl skipReset
+    mov bgVariant, 0  ; Reset back to first variant
+
+    ; Increment bgVariant
+    inc bgVariant
+    cmp bgVariant, 6
+    jl skipReset
+    mov bgVariant, 0  ; Reset to 0 if it exceeds 5
+
+skipReset:
+    ; === PRINT NAMES AFTER BACKGROUND ===
+    call printNames
+
+    jmp mainL  ; Make sure control goes back to the main loop
+
+drawBackground endp
+
+
+
+printNames proc
+    ; Set cursor position
+    mov ah, 02h  
+    mov bh, 0    
+    mov dh, 10    ; Row
+    mov dl, 19    ; Column
+    int 10h      
+
+    ; Print names
+    mov si, offset names  
+print_names_loop:  ; <== Renamed this to avoid conflict
+    mov al, [si]  
+    cmp al, 0     ; Check if end of string
+    je done_printing
+    mov ah, 0Eh   ; Teletype function
+    int 10h       ; Print character
+    inc si        ; Move to next character
+    jmp print_names_loop  
+
+done_printing:
+    ret
+printNames endp
+
+
 
 ;------- start of number 4 -------
 scroll:
