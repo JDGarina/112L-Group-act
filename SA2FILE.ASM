@@ -18,8 +18,7 @@
     nameInput   db 'Balagao Florentino Garina Novero DelaCruz', 0
     nameBackup  db 'Balagao Florentino Garina Novero DelaCruz', 0 
     vowels      db 'aeiouAEIOU', 0
-    scrn        db 0
-
+    
     ;menu var 
     menuText  db '===============================================================================',0Dh,0Ah
               db 'Enter a Number',0Dh,0Ah
