@@ -15,14 +15,18 @@
     endCol    db ?
     currAttr  db ?
 
-    ;menu var shit
+    ;var of number 5 
+    namesStr    db  'Balagao Florentino Garina Novero DelaCruz', 0
+    namesCopy   db  50 dup(?)
+
+    ;menu var 
     menuText  db '===============================================================================',0Dh,0Ah
               db 'Enter a Number',0Dh,0Ah
               db '(1) Color                (3) Background Patterns    (5) String Manipulation',0Dh,0Ah
-              db '(2) Text Patterns        (4) Moving Text',0Dh,0Ah
+              db '(2) Text Patterns        (4) Moving Text            (6) Exit Program ',0Dh,0Ah   
               db 0
 .code
-;this is for printing the menu po rarw
+;this is for printing the menu po 
 printMenu proc near
     mov ah, 02h
     mov bh, 0
@@ -101,28 +105,41 @@ dinitail:
 ;dito add yung number ninyo and use jump or some shit to go there
 mainL:
     mov ah, 7
-    int 21h    
+    int 21h
     
-    cmp al, '1'     ; Check if '1' was pressed
-    je colors ; Jump to handle input section
+    cmp al, '1'
+    jne not1
+    jmp colors
 
+not1:
+    cmp al, '2'
+    jne not2
+    jmp colors ; change mo ito kung san man mag start yung num 2
+
+not2:
+    cmp al, '3'
+    jne not3
+    jmp colors ; change mo ito kung san man mag start yung num 3
+
+not3:
     cmp al, '4'
-    jne checkSix
+    jne not4
     jmp scroll
 
+not4:
+    cmp al, '5'
+    jne not5
+    jmp coclors ; change mo ito kung san man mag start yung num 5
 
-
-checkSix:
+not5:
     cmp al, '6'
-    jne notSix
+    jne not6
     jmp exit
 
-notSix:
+not6:
     jmp mainL
 
-
 ;------- start of number 1 -------
-
 colors:
     push ds                    ; Save DS register
     mov ax, 0B800h             ; Load video memory segment
@@ -180,8 +197,6 @@ change_color_loop:
 
     pop ds                    
     jmp mainL                 
-
-
 
 ;------- start of number 4 -------
 scroll:
@@ -294,7 +309,7 @@ doneScroll:
     mov [scn], al
     jmp mainL
 
-
+;------- start of number 5 -------
 
 exit:
     mov ah, 4Ch
