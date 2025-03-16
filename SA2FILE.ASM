@@ -1,6 +1,5 @@
 .model small
 .stack 100h
-
 .data
     names     db 'Balagao Florentino Garina Novero DelaCruz', 0
     scrl      db 'Balagao Florentino Garina Novero DelaCruz$', 0
@@ -114,12 +113,11 @@ mainL:
 not1:
     cmp al, '2'
     jne not2
-    jmp colors ; change mo ito kung san man mag start yung num 2
-
+    jmp colors 
 not2:
     cmp al, '3'
     jne not3
-    jmp colors ; change mo ito kung san man mag start yung num 3
+    jmp colors  
 
 not3:
     cmp al, '4'
@@ -129,7 +127,7 @@ not3:
 not4:
     cmp al, '5'
     jne not5
-    jmp coclors ; change mo ito kung san man mag start yung num 5
+    jmp colors 
 
 not5:
     cmp al, '6'
